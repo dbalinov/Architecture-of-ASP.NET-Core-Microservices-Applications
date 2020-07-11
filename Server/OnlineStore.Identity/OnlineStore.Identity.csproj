@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Common\OnlineStore.Common\OnlineStore.Common.csproj" />
+    <ProjectReference Include="..\Common\OnlineStore.JwtAuthentication\OnlineStore.JwtAuthentication.csproj" />
+  </ItemGroup>
+
+</Project>
