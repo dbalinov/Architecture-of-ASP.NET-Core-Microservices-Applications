@@ -7,10 +7,10 @@ using OnlineStore.Catalog.Infrastructure;
 using OnlineStore.Common.Infrastructure;
 using OnlineStore.JwtAuthentication.Infrastructure;
 using System.Reflection;
-using OnlineStore.Catalog.Services;
 using OnlineStore.Catalog.Services.Categories;
 using OnlineStore.Catalog.Services.Products;
 using AutoMapper;
+using OnlineStore.Catalog.Messages;
 
 namespace OnlineStore.Catalog
 {
@@ -28,6 +28,7 @@ namespace OnlineStore.Catalog
                 .AddAutoMapper(Assembly.GetExecutingAssembly())
                 .AddTransient<ICategoryService, CategoryService>()
                 .AddTransient<IProductService, ProductService>()
+                .AddMessaging(this.Configuration, typeof(OrderCreatedConsumer))
                 .AddControllers();
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

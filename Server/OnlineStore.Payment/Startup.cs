@@ -21,6 +21,7 @@ namespace OnlineStore.Payment
                 .AddDatabase<PaymentDbContext>(this.Configuration)
                 .AddJwtTokenAuthentication(this.Configuration)
                 .AddScoped<IPayService, PayService>()
+                .AddMessaging(this.Configuration)
                 .AddControllers();
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

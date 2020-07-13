@@ -1,26 +1,25 @@
-﻿using OnlineStore.Catalog.Models.Categories;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using OnlineStore.Catalog.Data;
+using OnlineStore.Catalog.Data.Models;
+using OnlineStore.Catalog.Models.Categories;
+using OnlineStore.Common.Services;
 
 namespace OnlineStore.Catalog.Services.Categories
 {
-    internal class CategoryService : ICategoryService
+    internal class CategoryService : DataService<Category>, ICategoryService
     {
-        private readonly CatalogDbContext db;
         private readonly IMapper mapper;
 
         public CategoryService(CatalogDbContext db, IMapper mapper)
-        {
-            this.db = db;
-            this.mapper = mapper;
-        }
+            : base(db)
+            => this.mapper = mapper;
 
         public async Task<IEnumerable<CategoryOutputModel>> GetAllAsync()
             => await this.mapper
-                .ProjectTo<CategoryOutputModel>(this.db.Categories.AsQueryable())
+                .ProjectTo<CategoryOutputModel>(this.All())
                 .ToListAsync();
     }
 }

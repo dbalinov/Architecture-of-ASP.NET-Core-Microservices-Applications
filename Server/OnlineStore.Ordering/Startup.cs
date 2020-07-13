@@ -8,6 +8,7 @@ using OnlineStore.Ordering.Data;
 using OnlineStore.Ordering.Services;
 using System.Reflection;
 using AutoMapper;
+using OnlineStore.Ordering.Messages;
 
 namespace OnlineStore.Ordering
 {
@@ -24,6 +25,7 @@ namespace OnlineStore.Ordering
                 .AddJwtTokenAuthentication(this.Configuration)
                 .AddAutoMapper(Assembly.GetExecutingAssembly())
                 .AddScoped<IOrderService, OrderService>()
+                .AddMessaging(this.Configuration, typeof(PaymentCompletedConsumer))
                 .AddControllers();
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
