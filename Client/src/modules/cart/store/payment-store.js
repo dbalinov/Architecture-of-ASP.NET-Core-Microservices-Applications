@@ -6,7 +6,7 @@ import {
   SET_PAYMENT_ERROR
 } from './mutation-types'
 
-const paymentUrl = 'https://localhost:5007/';
+const paymentUrl = 'http://localhost:5007/';
 
 const state = {
   loading: false,

@@ -6,7 +6,7 @@ import {
   SET_ORDER_ERROR
 } from './mutation-types'
 
-const orderUrl = 'https://localhost:5003/';
+const orderUrl = 'http://localhost:5003/';
 
 const state = {
   orderId: null,

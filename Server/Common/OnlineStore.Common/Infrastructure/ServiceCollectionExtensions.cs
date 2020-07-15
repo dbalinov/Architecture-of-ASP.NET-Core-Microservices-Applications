@@ -32,14 +32,18 @@ namespace OnlineStore.Common.Infrastructure
                     mt.AddBus(context => Bus.Factory.CreateUsingRabbitMq(rmq =>
                     {
                         // TODO: Extract to configuration
-                        rmq.Host("localhost");
+                        rmq.Host("rabbitmq", host =>
+                        {
+                            host.Username("rabbitmq");
+                            host.Password("rabbitmq");
+                        });
 
                         rmq.UseHealthCheck(context);
 
                         consumers.ForEach(consumer => rmq.ReceiveEndpoint(consumer.FullName, endpoint =>
                         {
-                            endpoint.PrefetchCount = 6;
-                            endpoint.UseMessageRetry(retry => retry.Interval(10, 1000));
+                            //endpoint.PrefetchCount = 6;
+                            //endpoint.UseMessageRetry(retry => retry.Interval(10, 1000));
 
                             endpoint.ConfigureConsumer(context, consumer);
                         }));

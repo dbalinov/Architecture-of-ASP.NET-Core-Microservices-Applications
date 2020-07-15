@@ -6,7 +6,7 @@ import {
   SET_CATEGORY_ERROR
 } from './mutation-types'
 
-const catalogUrl = 'https://localhost:5005/';
+const catalogUrl = 'http://localhost:5005/';
 
 const state = {
   categories: [],

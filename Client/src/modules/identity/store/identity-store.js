@@ -7,7 +7,7 @@ import {
   SET_IDENTITY_ERROR,
 } from './mutation-types'
 
-const identityUrl = 'https://localhost:5001/';
+const identityUrl = 'http://localhost:5001/';
 
 const state = {
   loading: false,

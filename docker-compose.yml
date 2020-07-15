@@ -1,0 +1,103 @@
+version: "3.8"
+
+services:
+  data:
+    container_name: sqlserver
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    ports:
+      - "1433:1433"
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=yourStrongPassword12!@
+    volumes:
+      - sqldata:/var/opt/mssql
+    networks:
+      - onlinestore-network
+  messages:
+    container_name: rabbitmq
+    image: rabbitmq:3-management
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    hostname: "rabbitmq"
+    environment:
+      - RABBITMQ_ERLANG_COOKIE=Rand0mR4bbitMqCo0k1e
+      - RABBITMQ_DEFAULT_USER=rabbitmq
+      - RABBITMQ_DEFAULT_PASS=rabbitmq
+    networks:
+      - onlinestore-network
+  catalog:
+    container_name: catalog
+    build:
+      context: ./Server
+      dockerfile: ./OnlineStore.Catalog/Dockerfile
+    ports:
+      - "5005:80"
+    env_file: Server/Common/OnlineStore.Common/Common.env
+    environment:
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=OnlineStoreCatalogDatabase;User Id=sa;Password=yourStrongPassword12!@;MultipleActiveResultSets=true
+    restart: on-failure
+    volumes:
+      - ./.aspnet/catalog/DataProtectionKeys:/root/.aspnet/DataProtectionKeys
+    networks:
+      - onlinestore-network
+    depends_on:
+      - data
+      - messages
+  identity:
+    container_name: identity
+    build:
+      context: ./Server
+      dockerfile: ./OnlineStore.Identity/Dockerfile
+    ports:
+      - "5001:80"
+    env_file: Server/Common/OnlineStore.Common/Common.env
+    environment:
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=OnlineStoreIdentityDatabase;User Id=sa;Password=yourStrongPassword12!@;MultipleActiveResultSets=true
+    restart: on-failure
+    volumes:
+      - ./.aspnet/identity/DataProtectionKeys:/root/.aspnet/DataProtectionKeys
+    networks:
+      - onlinestore-network
+    depends_on:
+      - data
+  ordering:
+    container_name: ordering
+    build:
+      context: ./Server
+      dockerfile: ./OnlineStore.Ordering/Dockerfile
+    ports:
+      - "5003:80"
+    env_file: Server/Common/OnlineStore.Common/Common.env
+    environment:
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=OnlineStoreOrderingDatabase;User Id=sa;Password=yourStrongPassword12!@;MultipleActiveResultSets=true
+    restart: on-failure
+    volumes:
+      - ./.aspnet/ordering/DataProtectionKeys:/root/.aspnet/DataProtectionKeys
+    networks:
+      - onlinestore-network
+    depends_on:
+      - data
+      - messages
+  payment:
+    container_name: payment
+    build:
+      context: ./Server
+      dockerfile: ./OnlineStore.Payment/Dockerfile
+    ports:
+      - "5007:80"
+    env_file: Server/Common/OnlineStore.Common/Common.env
+    environment:
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=OnlineStorePaymentDatabase;User Id=sa;Password=yourStrongPassword12!@;MultipleActiveResultSets=true
+    restart: on-failure
+    volumes:
+      - ./.aspnet/payment/DataProtectionKeys:/root/.aspnet/DataProtectionKeys
+    networks:
+      - onlinestore-network
+    depends_on:
+      - data
+      - messages
+networks:
+  onlinestore-network:
+volumes:
+  sqldata:
