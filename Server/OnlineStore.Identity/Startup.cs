@@ -21,6 +21,7 @@ namespace OnlineStore.Identity
             => services
                 .AddDatabase<IdentityDbContext>(this.Configuration)
                 .AddJwtTokenAuthentication(this.Configuration)
+                .AddHealth(this.Configuration)
                 .AddUserStorage()
                 .AddTransient<ITokenGeneratorService, TokenGeneratorService>()
                 .AddTransient<IIdentityService, IdentityService>()

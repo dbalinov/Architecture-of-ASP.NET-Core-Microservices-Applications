@@ -1,9 +1,10 @@
 ﻿using System.Reflection;
 using Microsoft.EntityFrameworkCore;
+using OnlineStore.Common.Data;
 
 namespace OnlineStore.Payment.Data
 {
-    public class PaymentDbContext : DbContext
+    public class PaymentDbContext : MessageDbContext
     {
         public PaymentDbContext(DbContextOptions<PaymentDbContext> options)
             : base(options)
@@ -12,11 +13,7 @@ namespace OnlineStore.Payment.Data
 
         public DbSet<Models.Payment> Payments { get; set; }
 
-        protected override void OnModelCreating(ModelBuilder builder)
-        {
-            builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
-
-            base.OnModelCreating(builder);
-        }
+        protected override Assembly ConfigurationsAssembly
+            => Assembly.GetExecutingAssembly();
     }
 }

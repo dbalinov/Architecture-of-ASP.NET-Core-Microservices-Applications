@@ -1,10 +1,11 @@
 ﻿using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using OnlineStore.Catalog.Data.Models;
+using OnlineStore.Common.Data;
 
 namespace OnlineStore.Catalog.Data
 {
-    public class CatalogDbContext : DbContext
+    public class CatalogDbContext : MessageDbContext
     {
         public CatalogDbContext(DbContextOptions<CatalogDbContext> options)
             : base(options)
@@ -15,11 +16,7 @@ namespace OnlineStore.Catalog.Data
 
         public DbSet<Category> Categories { get; set; }
 
-        protected override void OnModelCreating(ModelBuilder builder)
-        {
-            builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
-
-            base.OnModelCreating(builder);
-        }
+        protected override Assembly ConfigurationsAssembly
+            => Assembly.GetExecutingAssembly();
     }
 }

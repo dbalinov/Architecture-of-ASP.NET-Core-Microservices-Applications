@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using MassTransit;
 using Microsoft.Extensions.Logging;
+using OnlineStore.Common.Data.Models;
 using OnlineStore.Common.Messages.Orders;
 using OnlineStore.Common.Services;
 using OnlineStore.Ordering.Data;
@@ -11,15 +12,14 @@ using OnlineStore.Ordering.Models;
 
 namespace OnlineStore.Ordering.Services
 {
-    internal class OrderService : IOrderService
+    internal class OrderService : DataService<Order>, IOrderService
     {
-        private readonly OrderingDbContext db;
         private readonly IBus publisher;
         private readonly ILogger<OrderService> logger;
 
         public OrderService(OrderingDbContext db, IBus publisher, ILogger<OrderService> logger)
+            : base(db)
         {
-            this.db = db;
             this.publisher = publisher;
             this.logger = logger;
         }
@@ -45,18 +45,22 @@ namespace OnlineStore.Ordering.Services
                     Status = OrderStatus.New
                 };
 
-                await this.db.Orders.AddAsync(order);
-
-                await this.publisher.Publish(new OrderCreatedMessage
+                var messageData = new OrderCreatedMessage
                 {
                     Products = orderLines.Select(ol => new OrderCreatedProduct
                     {
                         ProductId = ol.ProductId,
                         Quantity = ol.Quantity
                     }).ToList()
-                });
+                };
 
-                await this.db.SaveChangesAsync();
+                var message = new Message(messageData);
+
+                await this.SaveAsync(order, message);
+
+                await this.publisher.Publish(messageData);
+
+                await this.MarkMessageAsPublished(message.Id);
 
                 return Result<int>.SuccessWith(order.Id);
             }
@@ -72,11 +76,11 @@ namespace OnlineStore.Ordering.Services
 
         public async Task SetStatusAsync(int orderId, OrderStatus status)
         {
-            var order = await this.db.Orders.FindAsync(orderId);
+            var order = await this.Data.FindAsync<Order>(orderId);
             
             order.Status = status;
 
-            await this.db.SaveChangesAsync();
+            await this.Data.SaveChangesAsync();
         }
     }
 }

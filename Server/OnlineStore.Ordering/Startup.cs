@@ -23,6 +23,7 @@ namespace OnlineStore.Ordering
             => services
                 .AddDatabase<OrderingDbContext>(this.Configuration)
                 .AddJwtTokenAuthentication(this.Configuration)
+                .AddHealth(this.Configuration)
                 .AddAutoMapper(Assembly.GetExecutingAssembly())
                 .AddScoped<IOrderService, OrderService>()
                 .AddMessaging(this.Configuration, typeof(PaymentCompletedConsumer))

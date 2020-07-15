@@ -20,6 +20,7 @@ namespace OnlineStore.Payment
             => services
                 .AddDatabase<PaymentDbContext>(this.Configuration)
                 .AddJwtTokenAuthentication(this.Configuration)
+                .AddHealth(this.Configuration)
                 .AddScoped<IPayService, PayService>()
                 .AddMessaging(this.Configuration)
                 .AddControllers();

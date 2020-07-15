@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using MassTransit;
 using Microsoft.Extensions.Logging;
+using OnlineStore.Common.Data.Models;
 using OnlineStore.Common.Messages.Payment;
 using OnlineStore.Common.Services;
 using OnlineStore.Payment.Data;
@@ -9,15 +10,14 @@ using OnlineStore.Payment.Models;
 
 namespace OnlineStore.Payment.Services
 {
-    internal class PayService : IPayService
+    internal class PayService : DataService<Data.Models.Payment>, IPayService
     {
-        private readonly PaymentDbContext db;
         private readonly IBus publisher;
         private readonly ILogger<PayService> logger;
 
         public PayService(PaymentDbContext db, IBus publisher, ILogger<PayService> logger)
+            : base(db)
         {
-            this.db = db;
             this.publisher = publisher;
             this.logger = logger;
         }
@@ -32,16 +32,18 @@ namespace OnlineStore.Payment.Services
                     TotalPrice = input.TotalPrice
                 };
 
-                await db.Payments.AddAsync(payment);
-
-                var message = new PaymentCompletedMessage
+                var messageData = new PaymentCompletedMessage
                 {
                     OrderId = payment.OrderId
                 };
 
-                await this.publisher.Publish(message);
+                var message = new Message(messageData);
 
-                await db.SaveChangesAsync();
+                await this.SaveAsync(payment, message);
+
+                await this.publisher.Publish(messageData);
+
+                await this.MarkMessageAsPublished(message.Id);
 
                 return Result.Success;
             }

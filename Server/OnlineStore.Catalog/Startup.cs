@@ -25,6 +25,7 @@ namespace OnlineStore.Catalog
             => services
                 .AddDatabase<CatalogDbContext>(this.Configuration)
                 .AddJwtTokenAuthentication(this.Configuration)
+                .AddHealth(this.Configuration)
                 .AddAutoMapper(Assembly.GetExecutingAssembly())
                 .AddTransient<ICategoryService, CategoryService>()
                 .AddTransient<IProductService, ProductService>()
